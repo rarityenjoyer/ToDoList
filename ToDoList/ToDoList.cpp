@@ -1,7 +1,8 @@
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <fstream>
 
 struct Task
 {
@@ -28,7 +29,7 @@ const void showTasks(std::vector<Task>& tasks)
 	}
 }
 
-void deleteTask(std::vector<Task>& tasks)		// doesn't work properly yet.
+void deleteTask(std::vector<Task>& tasks)		
 {
 	showTasks(tasks);
 	std::cout << "Choose the number of the task that you want to delete: ";
@@ -38,14 +39,14 @@ void deleteTask(std::vector<Task>& tasks)		// doesn't work properly yet.
 	std::cout << "You succesfully deleted task #" << taskNumber << ".\n";
 }
 
-void statusUpdate(std::vector<Task>& tasks)		// doesn't work properly yet.				
+void statusUpdate(std::vector<Task>& tasks)						
 {
 	showTasks(tasks);
 	std::cout << "Choose the number of the task that you want to change the status of: ";
 	int taskNumber = 0;
 	std::cin >> taskNumber;
 	tasks[taskNumber-1].completed = true;
-	std::cout << "Good work! Congratulations on completing the '" << tasks[taskNumber].name << "' task.\n";
+	std::cout << "Good work! Congratulations on completing the '" << tasks[taskNumber-1].name << "' task.\n";
 }
 
 void addTask(std::vector<Task>& tasks)
@@ -66,7 +67,7 @@ void addTask(std::vector<Task>& tasks)
 }
 
 
-void interfaceFunction(std::vector<Task> tasks, std::string name)
+void interfaceFunction(std::vector<Task>& tasks, std::string name)
 {
 	std::cout << "Hey, " << name << "! " << ((tasks.size() == 0) ? "Looks like you don't have any tasks yet ;(\n" : "Hope you completed all your tasks for today!\n");
 	int workStatus = 1;
@@ -104,13 +105,45 @@ void interfaceFunction(std::vector<Task> tasks, std::string name)
 	}
 }
 
+void readSavedTasks(std::vector<Task>& tasks)
+{
+	std::ifstream inFile("tasks.txt");
+	if (inFile.is_open())
+	{
+		std::string name, description;
+		bool completed;
+		while (std::getline(inFile, name, '|') && std::getline(inFile, description, '|') && inFile >> completed)
+		{
+			inFile.ignore();
+			tasks.emplace_back(name, description, completed);
+		}
+		inFile.close();
+	}
+}
+
+void saveTasks(std::vector<Task>& tasks)
+{
+	std::ofstream outFile("tasks.txt");
+	if (outFile.is_open())
+	{
+		for (const auto& task : tasks)
+		{
+			outFile << task.name << "|" << task.description << "|" << task.completed << "\n";
+		}
+		outFile.close();
+	}
+	std::cout << "All of your tasks was saved. Goodbye <3\n";
+}
+
 int main()
 {
+	std::vector<Task> tasks;
+	readSavedTasks(tasks);
 	std::cout << "Enter your name: ";
 	std::string name;
 	std::cin >> name;
-	std::vector<Task> tasks;
 	interfaceFunction(tasks, name);
+	saveTasks(tasks);
 
 
 
