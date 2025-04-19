@@ -24,7 +24,10 @@ const void showTasks(std::vector<Task>& tasks)
 	{
 		std::cout << "Task #" << count + 1 << std::endl;
 		std::cout << "Name: " << tasks[count].name << std::endl;
-		std::cout << "Description: " << tasks[count].description << std::endl;
+		if (tasks[count].description != "0")
+		{
+			std::cout << "Description: " << tasks[count].description << std::endl;
+		}
 		std::cout << "Status: " << ((tasks[count].completed == true) ? "Completed\n" : "Uncompleted\n") << std::endl;
 	}
 }
@@ -59,7 +62,7 @@ void addTask(std::vector<Task>& tasks)
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	std::getline(std::cin, name);
 	std::cout << "Good! Now give it a more detailed description if it's needed.\n";
-	std::cout << "(If you want to skip this part - just press <ENTER> button.)\n";
+	std::cout << "(If you want to skip this part - just press 0 button.)\n";
 	std::getline(std::cin, description);
 	std::cout << "Done! Your task is created.\n";
 	Task task(name, description, completed);
@@ -67,9 +70,9 @@ void addTask(std::vector<Task>& tasks)
 }
 
 
-void interfaceFunction(std::vector<Task>& tasks, std::string name)
+void interfaceFunction(std::vector<Task>& tasks, std::string userName)
 {
-	std::cout << "Hey, " << name << "! " << ((tasks.size() == 0) ? "Looks like you don't have any tasks yet ;(\n" : "Hope you completed all your tasks for today!\n");
+	std::cout << "Hey, " << userName << "! " << ((tasks.size() == 0) ? "Looks like you don't have any tasks yet ;(\n" : "Hope you completed all your tasks for today!\n");
 	int workStatus = 1;
 	while(workStatus)
 	{ 
@@ -105,9 +108,11 @@ void interfaceFunction(std::vector<Task>& tasks, std::string name)
 	}
 }
 
-void readSavedTasks(std::vector<Task>& tasks)
+void readSavedTasks(std::vector<Task>& tasks, std::string& userName)
 {
 	std::ifstream inFile("tasks.txt");
+	std::getline(inFile, userName, '/');
+	inFile.ignore(); 
 	if (inFile.is_open())
 	{
 		std::string name, description;
@@ -121,9 +126,10 @@ void readSavedTasks(std::vector<Task>& tasks)
 	}
 }
 
-void saveTasks(std::vector<Task>& tasks)
+void saveTasks(std::vector<Task>& tasks, std::string& userName)
 {
 	std::ofstream outFile("tasks.txt");
+	outFile << userName << "/" << "\n";  
 	if (outFile.is_open())
 	{
 		for (const auto& task : tasks)
@@ -138,12 +144,15 @@ void saveTasks(std::vector<Task>& tasks)
 int main()
 {
 	std::vector<Task> tasks;
-	readSavedTasks(tasks);
+	std::string userName;
+	readSavedTasks(tasks, userName);
+	if(userName.size() == 0)
+	{ 
 	std::cout << "Enter your name: ";
-	std::string name;
-	std::cin >> name;
-	interfaceFunction(tasks, name);
-	saveTasks(tasks);
+	std::cin >> userName;
+	}
+	interfaceFunction(tasks, userName);
+	saveTasks(tasks, userName);
 
 
 
