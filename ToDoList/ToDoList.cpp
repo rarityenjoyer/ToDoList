@@ -18,8 +18,14 @@ bool operator==(const Task& lhs, const Task& rhs)
 	return lhs.name == rhs.name && lhs.description == rhs.description && lhs.completed == rhs.completed;
 }
 
-const void showTasks(std::vector<Task>& tasks)
+void showTasks(const std::vector<Task>& tasks)
 {
+	if (tasks.empty())
+	{
+		std::cout << "There's no tasks to show.\n";
+		return;
+	}
+
 	for (int count = 0; count < tasks.size(); ++count)
 	{
 		std::cout << "Task #" << count + 1 << std::endl;
@@ -34,6 +40,12 @@ const void showTasks(std::vector<Task>& tasks)
 
 void deleteTask(std::vector<Task>& tasks)		
 {
+	if (tasks.empty())
+	{
+		std::cout << "There's no tasks to delete.\n";
+		return;
+	}
+
 	showTasks(tasks);
 	std::cout << "Choose the number of the task that you want to delete: ";
 	int taskNumber = 0;
@@ -44,6 +56,12 @@ void deleteTask(std::vector<Task>& tasks)
 
 void statusUpdate(std::vector<Task>& tasks)						
 {
+	if (tasks.empty())
+	{
+		std::cout << "There's no tasks to update.\n";
+		return;
+	}
+
 	showTasks(tasks);
 	std::cout << "Choose the number of the task that you want to change the status of: ";
 	int taskNumber = 0;
